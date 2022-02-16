@@ -1,0 +1,43 @@
+Parameters:
+   BucketName:
+      Description: Name of the bucket
+      Type: String
+      Default: cft-bucket-22
+
+   #Providing the user to enter an option either Enabled/Suspended for Transfer Acceleration 
+   AccelerationStatus:
+       Type: String
+
+
+#Creating an S3 Bucket
+Resources :
+   MyS3Bucket:
+     Type: 'AWS::S3::Bucket'
+     Description: A S3 bucket created using CloudFormation Template
+     Properties:
+        AccelerateConfiguration: 
+           AccelerationStatus: !Ref AccelerationStatus #The acceleration status is taken from the input given from the parameter
+        VersioningConfiguration:
+           Status: Enabled
+        Tags:
+          - Key: "Name"
+            Value: "Abhilash"
+        
+   #Creating an Amazon S3 Bucket Policy
+   MyBucketPolicy: 
+      Type: 'AWS::S3::BucketPolicy'
+      Properties:
+         Bucket: !Ref MyS3Bucket #Referring to the bucket for which the policy is to be created
+         PolicyDocument:
+           Statement:
+             -
+               Action:
+                 - s3:* #Allows all S3 actions like Get, Put and Delete but can be changed based on needs
+               Effect: Allow
+               Resource:
+                 - !Sub arn:aws:s3:::${MyS3Bucket}
+                 - !Sub arn:aws:s3:::${MyS3Bucket}/*
+               Principal:
+                 AWS:
+                   - '*'
+        
